@@ -22,6 +22,7 @@ export interface ClothingItem {
   popular_item_id: string;
   created_at: string;
   updated_at: string;
+  price?: string; // Added
 }
 
 export interface AddItemRequest {

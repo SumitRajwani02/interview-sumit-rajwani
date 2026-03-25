@@ -27,3 +27,19 @@ SELECT category, COUNT(*)::int AS count
 FROM wardrobe_items
 WHERE user_id = $1
 GROUP BY category;
+
+-- name: GetWardrobeStats :one
+SELECT 
+    (SELECT COUNT(*)::int FROM wardrobe_items WHERE user_id = $1) AS total_items,
+    (SELECT MAX(created_at) FROM wardrobe_items WHERE user_id = $1) AS last_added,
+    COALESCE(
+        (SELECT json_object_agg(category, cat_count) 
+         FROM (
+             SELECT category, COUNT(*)::int as cat_count 
+             FROM wardrobe_items 
+             WHERE user_id = $1 
+             GROUP BY category
+         ) sub
+        ), 
+        '{}'::json
+    ) AS category_counts;
